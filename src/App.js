@@ -5,35 +5,38 @@ import Person from './Person/Person';
 class App extends Component {
   state = {
     persons: [
-      { name: 'Max', age: 28 },
-      { name: 'Manu', age: 29 },
-      { name: 'Stephanie', age: 26 }
+      { id:"khikhlk", name: 'Max', age: 28 },
+      { id:"bj9ijlbj", name: 'Manu', age: 29 },
+      { id:"jhgkgk", name: 'Stephanie', age: 26 }
     ],
     otherState: 'some other value',
     showPersons: false
   }
 
-  switchNameHandler = (newName) => {
-    //console.log('Was clicked');
-    this.setState(
-      {persons:
-        [
-          { name: newName, age: 28 },
-          { name: 'Manu', age: 29 },
-          { name: 'Stephanie', age: 27 }
-        ]
-      }
-    )
+  deletePersonHandler = (personIndex) => {
+    //new array with objects of old array -> copy of array
+    const persons = [...this.state.persons];
+    //remove one elem from array
+    persons.splice(persons, 1);
+    this.setState({persons: persons})
   }
 
-  nameChangedHandler = (event) => {
-    this.setState( {
-      persons: [
-        { name: 'Max', age: 28 },
-        { name: event.target.value, age: 29 },
-        { name: 'Stephanie', age: 27 }
-      ]
-    })
+  nameChangedHandler = (event, id) => {
+    //find person being updated
+    const personIndex = this.state.persons.findIndex(p => {
+      return p.id === id;
+    });
+
+    const person = {
+      ...this.state.persons[personIndex]
+    };
+
+    person.name = event.target.value;
+
+    const persons = [...this.state.persons];
+    persons[personIndex] = person;
+
+    this.setState( {persons: persons});
   }
 
   togglePersonHandler = () => {
@@ -56,10 +59,14 @@ class App extends Component {
     if (this.state.showPersons) {
       persons = (
         <div>
-          {this.state.persons.map(person => {
+          {this.state.persons.map((person, index) => {
             return <Person
+              click={() => this.deletePersonHandler(index)}
               name={person.name}
-              age={person.age} />
+              age={person.age}
+              //key would usually be an id when you fetch data
+              key={person.id}
+              changed={(event) => this.nameChangedHandler(event, person.id)}/>
           })}
         </div>
       );
